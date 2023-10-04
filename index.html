@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.1.2/socket.io.js"></script>
+</head>
+<body>
+    <h1>Real-Time Chat</h1>
+
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter your username">
+    </div>
+
+    <div>
+        <label for="secretId">Secret ID:</label>
+        <input type="text" id="secretId" placeholder="Enter secret ID">
+        <button onclick="createRoomWithSecret()">Create Room</button>
+    </div>
+
+    <div>
+        <label for="room">Room ID:</label>
+        <input type="text" id="room" placeholder="Enter room ID">
+        <button onclick="joinRoom()">Join Room</button>
+    </div>
+
+    <div id="chat">
+        <h2>Chat Room</h2>
+        <div id="activeUsers">Active Users:</div>
+        <div id="messages">Chat Messages:</div>
+        <div>
+            <input type="text" id="message" placeholder="Type your message">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    
+    
+        
+        
+    
+
+
+
+    <script>
+        
+            const socket = io.connect('http://' + document.domain + ':' + location.port);
+        
+            socket.on('connect', function() {
+                // Handle connection
+            });
+        
+            socket.on('user_joined', function(data) {
+                // Handle user joined event
+            });
+        
+            socket.on('user_left', function(data) {
+                // Handle user left event
+            });
+        
+            socket.on('active_users', function(data) {
+                // Update active users list
+                const activeUsersDiv = document.getElementById('activeUsers');
+                activeUsersDiv.innerHTML = 'Active Users: ' + data.users.join(', ');
+            });
+        
+            socket.on('message', function(data) {
+                // Handle incoming messages
+                const messagesDiv = document.getElementById('messages');
+                const message = `${data.username}: ${data.message}`;
+                messagesDiv.innerHTML += '<p>' + message + '</p>';
+            });
+
+        function createRoomWithSecret() {
+            // Send a createRoomWithSecret event to the server
+            const username = document.getElementById('username').value;
+            const secretId = document.getElementById('secretId').value;
+            socket.emit('createRoomWithSecret', { username: username, secretId: secretId });
+        }
+
+        function joinRoom() {
+            // Send a join event to the server
+            const username = document.getElementById('username').value;
+            const room = document.getElementById('room').value;
+            socket.emit('join', { username: username, room: room });
+        }
+
+        function sendMessage() {
+            // Send a message to the server
+            const username = document.getElementById('username').value;
+            const room = document.getElementById('room').value;
+            const message = document.getElementById('message').value;
+            socket.emit('message', { username: username, room: room, message: message });
+        }
+        function createRoomForActiveUsers() {
+            // Send a createRoomForActiveUsers event to the server
+            const username = document.getElementById('username').value;
+            socket.emit('createRoomForActiveUsers', { username: username });
+        }
+    </script>
+</body>
+</html>
